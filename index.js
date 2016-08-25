@@ -1,6 +1,7 @@
-import { selection, select, selectAll } from "d3-selection";
+import { selection, select } from "d3-selection";
+
 import { default as parent } from './src/parent';
 
-selection.prototype.parent = parent;
+selection.prototype.parent = parent
 
-export { selection, select, selectAll }
+export { selection, select }

@@ -24,10 +24,10 @@ all_parents = function(node, candidates) {
 
 // return the immediate parentNode
 direct_parent = function(node) {
-  if (node.parentNode) {
-    return node.parentNode;
+  if (node && node.parentNode) {
+    return [node.parentNode];
   } else {
-    return null;
+    return [null];
   }
 };
 
@@ -93,9 +93,11 @@ iterator = function(input_selection, processor) {
     // loop through nodes
     for (var j = 0, jlength = group.length; j < jlength; j++) {
       // process nodes
-      node = group[j]
-      parent = processor(node).pop();
-      output_selection._groups[i][j] = parent;
+      node = group[j];
+      if (node) {
+        parent = processor(node).pop();
+        output_selection._groups[i][j] = parent;
+      }
     }
   }
   return output_selection;

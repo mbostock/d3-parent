@@ -1,4 +1,5 @@
-'use strict';
+import { selection, select } from 'd3-selection'
+
 var all_parents,
     direct_parent,
     closest_parent,
@@ -6,6 +7,7 @@ var all_parents,
     iterator,
     selector_to_nodes,
     parent;
+
 // match all parents with linear iteration
 all_parents = function(node, candidates) {
   var candidate,
@@ -19,6 +21,7 @@ all_parents = function(node, candidates) {
   }
   return results;
 };
+
 // return the immediate parentNode
 direct_parent = function(node) {
   if (node.parentNode) {
@@ -27,6 +30,7 @@ direct_parent = function(node) {
     return null;
   }
 };
+
 // match by iterating upward through the DOM. this is an
 // expensive operation and should be avoided when another
 // method will suffice.
@@ -49,9 +53,11 @@ closest_parent = function(node, candidates) {
   }
   return results;
 };
+
 // find exactly one parent node, optimizing iteration when possible
 single_parent = function(node, candidates) {
-  var results;
+  var results,
+      result;
   // try linear search first
   results = all_parents(node, candidates);
   // if linear search matches multiple candidates,
@@ -59,38 +65,42 @@ single_parent = function(node, candidates) {
   if (results.length && results.length > 1) {
     results = closest_parent(node, candidates);
   }
+  // if the results are in array format, take the first
+  if (results.length > 0) {
+    result = results[0];
+  } else {
+    result = results;
+  }
   return results;
 };
+
 // reformat a multidimensional array of nodes as a d3 selection
 // optionally inserting a processing function along the way
 iterator = function(input_selection, processor) {
   var output_selection,
-      input_group,
-      output_group,
-      input_node,
-      output_node;
-  if (typeof d3 !== 'undefined') {
-    output_selection = d3.select();
-  } else {
-    output_selection = {_groups: [], _parents: []};
-    output_selection.prototype = input_selection;
-  }
-  output_selection._groups.shift();
+      group,
+      node,
+      parent;
+  // create a new selection and copy the existing nodes
+  output_selection = selection();
+  output_selection._parents = input_selection._parents;
   // loop through groups
   for (var i = 0, ilength = input_selection._groups.length; i < ilength; i++) {
-    input_group = input_selection._groups[i]
-    output_group = Object.create(input_group);
-    // loop through nodes
-    for (var j = 0, jlength = input_group.length; j < jlength; j++) {
-      input_node = input_group[j];
-      output_node = processor(input_node)[0]
-      output_group[j] = output_node;
+    group = input_selection._groups[i];
+    if (typeof output_selection._groups[i] === 'undefined') {
+      output_selection._groups[i] = [];
     }
-    output_selection._groups.push(output_group);
-    output_selection._parents = input_selection._parents;
+    // loop through nodes
+    for (var j = 0, jlength = group.length; j < jlength; j++) {
+      // process nodes
+      node = group[j]
+      parent = processor(node).pop();
+      output_selection._groups[i][j] = parent;
+    }
   }
   return output_selection;
 };
+
 // fetch an array of matching nodes for a DOM selector string
 selector_to_nodes = function(selector) {
   var node_list,
@@ -104,6 +114,7 @@ selector_to_nodes = function(selector) {
   nodes = Array.prototype.slice.call(node_list);
   return nodes;
 };
+
 // public function to select single parent matching a selector
 parent = function(selector) {
   var selection,

@@ -117,11 +117,9 @@ selector_to_nodes = function(selector) {
 
 // public function to select single parent matching a selector
 parent = function(selector) {
-  var selection,
-      candidates,
+  var candidates,
       processor,
       results;
-  selection = this;
   if (!selector) {
     processor = function(node) {
       return direct_parent(node);
@@ -132,7 +130,7 @@ parent = function(selector) {
       return single_parent(node, candidates);
     };
   }
-  results = iterator(selection, processor);
+  results = iterator(this, processor);
   return results;
 };
 

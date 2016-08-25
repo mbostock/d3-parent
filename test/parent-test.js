@@ -2,7 +2,6 @@ var tape = require('tape'),
     jsdom = require('jsdom').jsdom,
     d3 = require('../');
     
-
 tape('d3.parent() returns an instance of d3.selection', function(test) {
     var html;
     html = '<div class="a"><div class="b"><div class="c"></div></div></div>';
@@ -60,9 +59,6 @@ tape('d3.parent() retains selection structure', function(test) {
     var html;
     html = '<div class="a"><div class="b"></div></div><div class="a"><div class="b"></div></div>';
     jsdom.env(html, function(error, window) {
-        var a,
-            b;
-        document = global.document = window.document;
         selected = d3.select(document).selectAll('div.a');
         parent = d3.select(document).select('div.c').parent('div.a');
         test.ok(selected._groups.length === parent._groups.length);

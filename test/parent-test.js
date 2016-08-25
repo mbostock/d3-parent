@@ -1,7 +1,7 @@
 var tape = require('tape'),
     jsdom = require('jsdom').jsdom,
     d3 = require('../');
-    
+
 tape('d3.parent() returns an instance of d3.selection', function(test) {
     var html;
     html = '<div class="a"><div class="b"><div class="c"></div></div></div>';
@@ -30,15 +30,15 @@ tape('d3.parent() moves up one level in the DOM', function(test) {
 });
 
 tape('d3.parent() collects the expected number of nodes', function(test) {
-      var html;
-      html = '<div class="a"><div class="b"><div class="c"></div><div class="c"></div></div></div>';
-      jsdom.env(html, function(error, window) {
-        document = global.document = window.document;
+    var html;
+    html = '<div class="a"><div class="b"><div class="c"></div><div class="c"></div></div></div>';
+    jsdom.env(html, function(error, window) {
         var b;
+        document = global.document = window.document;
         b = d3.select(document).selectAll('div.c').parent();
         test.ok(b.size() === 2);
         test.end();
-     })
+    });
 });
 
 tape('d3.parent() takes a DOM selector string', function(test) {
@@ -56,7 +56,9 @@ tape('d3.parent() takes a DOM selector string', function(test) {
 });
 
 tape('d3.parent() retains selection structure', function(test) {
-    var html;
+    var html,
+        selected,
+        parent;
     html = '<div class="a"><div class="b"></div></div><div class="a"><div class="b"></div></div>';
     jsdom.env(html, function(error, window) {
         selected = d3.select(document).selectAll('div.a');
